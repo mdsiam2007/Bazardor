@@ -1,0 +1,207 @@
+"use client";
+
+import React, { useState, Suspense } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import PriceTicker from "@/components/PriceTicker";
+import Footer from "@/components/Footer";
+import { signIn } from "@/lib/auth-client";
+import toast from "react-hot-toast";
+import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+
+function SignInContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      toast.error("অনুগ্রহ করে ইমেইল এবং পাসওয়ার্ড প্রদান করুন");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await signIn.email({
+        email,
+        password,
+      });
+
+      if (res.error) {
+        toast.error(res.error.message || "ইমেইল বা পাসওয়ার্ড ভুল হয়েছে");
+      } else {
+        toast.success("সফলভাবে লগইন হয়েছে!");
+        router.push(redirect);
+      }
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : "লগইন করতে সমস্যা হয়েছে";
+      toast.error(errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setSocialLoading(true);
+    try {
+      await signIn.social({
+        provider: "google",
+        callbackURL: redirect,
+      });
+    } catch {
+      toast.error("গুগল দিয়ে সাইন ইন ব্যর্থ হয়েছে");
+      setSocialLoading(false);
+    }
+  };
+
+  return (
+    <div className="w-full max-w-md bg-white rounded-2xl border border-[#E1E8E1] p-6 sm:p-8 shadow-sm">
+      {/* Header */}
+      <div className="text-center mb-6">
+        <span className="text-3xl mb-2 inline-block">🛒</span>
+        <h1 className="text-2xl font-bold text-[#1D271F]">
+          সাইন ইন করুন
+        </h1>
+        <p className="text-xs sm:text-sm text-gray-500 mt-1">
+          বিস্তারিত দাম, বাজার তুলনা ও প্রোফাইল দেখতে অ্যাকাউন্টে প্রবেশ করুন।
+        </p>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-xs font-semibold text-[#1D271F] mb-1.5">
+            ইমেইল ঠিকানা
+          </label>
+          <div className="relative">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+              className="w-full px-3.5 py-2.5 pl-10 text-sm rounded-xl border border-[#E1E8E1] focus:border-[#05893E] focus:outline-none focus:ring-2 focus:ring-[#05893E]/20 transition-all text-[#1D271F]"
+            />
+            <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-[#1D271F] mb-1.5">
+            পাসওয়ার্ড
+          </label>
+          <div className="relative">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="কমপক্ষে ৮ অক্ষর"
+              required
+              className="w-full px-3.5 py-2.5 pl-10 text-sm rounded-xl border border-[#E1E8E1] focus:border-[#05893E] focus:outline-none focus:ring-2 focus:ring-[#05893E]/20 transition-all text-[#1D271F]"
+            />
+            <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-2.5 px-4 rounded-xl bg-[#05893E] hover:bg-[#047F39] text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>যাচাই করা হচ্ছে...</span>
+            </>
+          ) : (
+            <>
+              <span>লগইন করুন</span>
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
+        </button>
+      </form>
+
+      {/* Social Divider */}
+      <div className="relative my-6 text-center">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-[#E1E8E1]" />
+        </div>
+        <span className="relative bg-white px-3 text-xs text-gray-500 font-medium">
+          অথবা
+        </span>
+      </div>
+
+      {/* Social Login Button */}
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={socialLoading}
+        className="w-full py-2.5 px-4 rounded-xl border border-[#E1E8E1] hover:bg-[#F0F5F0] text-[#1D271F] font-medium text-sm transition-all flex items-center justify-center gap-3 cursor-pointer"
+      >
+        <svg className="w-4 h-4" viewBox="0 0 24 24">
+          <path
+            fill="#4285F4"
+            d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+          />
+          <path
+            fill="#34A853"
+            d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.02 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+          />
+          <path
+            fill="#EA4335"
+            d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+          />
+        </svg>
+        <span>Google দিয়ে চালিয়ে যান</span>
+      </button>
+
+      {/* Toggle Register Link */}
+      <div className="text-center mt-6 pt-4 border-t border-[#F0F5F0]">
+        <p className="text-xs text-gray-600">
+          অ্যাকাউন্ট নেই?{" "}
+          <Link
+            href={`/signup?redirect=${encodeURIComponent(redirect)}`}
+            className="text-[#05893E] hover:underline font-bold"
+          >
+            সাইন আপ করুন
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <div className="min-h-screen flex flex-col bg-[#FAFCFA]">
+      <Navbar />
+      <PriceTicker />
+
+      <main className="flex-1 flex items-center justify-center px-4 py-12">
+        <Suspense
+          fallback={
+            <div className="w-full max-w-md bg-white rounded-2xl border border-[#E1E8E1] p-8 shadow-sm flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full border-4 border-[#05893E]/20 border-t-[#05893E] animate-spin" />
+            </div>
+          }
+        >
+          <SignInContent />
+        </Suspense>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
