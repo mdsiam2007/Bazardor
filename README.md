@@ -1,6 +1,5 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=0,2,25,30&height=220&section=header&text=BazarDor%20(%E0%A6%AC%E0%A6%BE%E0%A6%9C%E0%A6%BE%E0%A6%B0%20%E0%A6%A6%E0%A6%B0)&fontSize=48&fontColor=ffffff&fontAlignY=38&desc=Real-Time%20Daily%20Commodity%20Market%20Price%20Tracker&descFontSize=18&descAlignY=62&descAlign=50">
     <img src="https://capsule-render.vercel.app/api?type=waving&color=05893E&height=220&section=header&text=BazarDor%20(%E0%A6%AC%E0%A6%BE%E0%A6%9C%E0%A6%BE%E0%A6%B0%20%E0%A6%A6%E0%A6%B0)&fontSize=48&fontColor=ffffff&fontAlignY=38&desc=Real-Time%20Daily%20Commodity%20Market%20Price%20Tracker&descFontSize=18&descAlignY=62&descAlign=50" alt="BazarDor Banner" />
   </picture>
 </p>
