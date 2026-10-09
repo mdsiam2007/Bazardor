@@ -7,7 +7,7 @@ import { useSession, signOut } from "@/lib/auth-client";
 import { Category, getCategories } from "@/lib/api";
 import { getBengaliDate } from "@/lib/bengali";
 import toast from "react-hot-toast";
-import { ChevronDown, User, LogOut, Edit3, ShoppingCart } from "lucide-react";
+import { ChevronDown, User, LogOut, Edit3 } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -15,18 +15,21 @@ export default function Navbar() {
   const { data: session } = useSession();
   const [categories, setCategories] = useState<Category[]>([]);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [todayDate, setTodayDate] = useState("");
+  const [todayDate] = useState(() => getBengaliDate());
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setTodayDate(getBengaliDate());
+    let mounted = true;
     getCategories()
       .then((cats) => {
-        if (Array.isArray(cats)) {
+        if (mounted && Array.isArray(cats)) {
           setCategories(cats);
         }
       })
       .catch(() => {});
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // Close dropdown on click outside
@@ -76,8 +79,17 @@ export default function Navbar() {
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#E1E8E1] bg-white hover:bg-[#F0F5F0] transition-colors text-sm font-medium text-[#1D271F]"
               >
-                <div className="w-7 h-7 rounded-full bg-[#05893E]/10 text-[#05893E] flex items-center justify-center font-bold text-xs">
-                  {session.user.name ? session.user.name.charAt(0).toUpperCase() : "U"}
+                <div className="w-7 h-7 rounded-full bg-[#05893E]/10 text-[#05893E] flex items-center justify-center font-bold text-xs overflow-hidden">
+                  {session.user.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || "User"}
+                      className="w-full h-full object-cover rounded-full"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    session.user.name ? session.user.name.charAt(0).toUpperCase() : "U"
+                  )}
                 </div>
                 <span className="max-w-[120px] truncate">{session.user.name || "প্রোফাইল"}</span>
                 <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${userMenuOpen ? "rotate-180" : ""}`} />
@@ -86,10 +98,24 @@ export default function Navbar() {
               {/* User Dropdown Menu */}
               {userMenuOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-[#E1E8E1] py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="px-4 py-2 border-b border-[#E1E8E1]">
-                    <p className="text-xs text-gray-500">লগইন করা আছেন</p>
-                    <p className="text-sm font-semibold text-[#1D271F] truncate">{session.user.name}</p>
-                    <p className="text-xs text-gray-500 truncate">{session.user.email}</p>
+                  <div className="px-4 py-2 border-b border-[#E1E8E1] flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full bg-[#05893E]/10 text-[#05893E] flex items-center justify-center font-bold text-xs overflow-hidden shrink-0">
+                      {session.user.image ? (
+                        <img
+                          src={session.user.image}
+                          alt={session.user.name || "User"}
+                          className="w-full h-full object-cover rounded-full"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        session.user.name ? session.user.name.charAt(0).toUpperCase() : "U"
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-gray-500">লগইন করা আছেন</p>
+                      <p className="text-sm font-semibold text-[#1D271F] truncate">{session.user.name}</p>
+                      <p className="text-xs text-gray-500 truncate">{session.user.email}</p>
+                    </div>
                   </div>
 
                   <Link

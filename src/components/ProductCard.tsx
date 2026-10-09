@@ -46,14 +46,14 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="mt-4 pt-3 border-t border-[#F0F5F0] flex items-center justify-between">
         <div>
           <span className="text-xs text-gray-500 block">আজকের দাম</span>
-          <span className="text-lg font-bold text-[#1D271F]">
+          <span className="text-lg font-bold text-[#1D271F] font-solaiman">
             {toBengaliNumber(product.today)} টাকা
           </span>
         </div>
 
         {/* Change Badge */}
         <div
-          className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold font-solaiman ${
             isUp
               ? "bg-[#F3FBF4] text-[#1A9951]"
               : isDown

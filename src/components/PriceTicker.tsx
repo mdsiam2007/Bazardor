@@ -51,11 +51,11 @@ export default function PriceTicker() {
             >
               <span className="text-sm">{p.image || "📦"}</span>
               <span className="font-medium">{p.nameBn}</span>
-              <span className="text-gray-600 font-semibold">
+              <span className="text-gray-600 font-semibold font-solaiman">
                 {toBengaliNumber(p.today)} টাকা/{unitBn}
               </span>
               <span
-                className={`font-bold px-1.5 py-0.5 rounded text-[11px] ${
+                className={`font-bold px-1.5 py-0.5 rounded text-[11px] font-solaiman ${
                   isUp
                     ? "text-[#1A9951] bg-[#F3FBF4]"
                     : isDown

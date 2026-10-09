@@ -58,8 +58,17 @@ export default function ProfilePage() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-[#E1E8E1] gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-[#05893E]/10 text-[#05893E] flex items-center justify-center font-bold text-2xl border border-[#05893E]/20 shadow-sm">
-                {session.user.name ? session.user.name.charAt(0).toUpperCase() : "U"}
+              <div className="w-16 h-16 rounded-full bg-[#05893E]/10 text-[#05893E] flex items-center justify-center font-bold text-2xl border border-[#05893E]/20 shadow-sm overflow-hidden">
+                {session.user.image ? (
+                  <img
+                    src={session.user.image}
+                    alt={session.user.name || "User"}
+                    className="w-full h-full object-cover rounded-full"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  session.user.name ? session.user.name.charAt(0).toUpperCase() : "U"
+                )}
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-[#1D271F] flex items-center gap-2">

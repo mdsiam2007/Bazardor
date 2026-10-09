@@ -12,7 +12,7 @@ async function ProductsSections() {
   let products: Product[] = [];
   try {
     products = await getProducts();
-  } catch (err) {
+  } catch {
     // Graceful error fallback
     products = [];
   }

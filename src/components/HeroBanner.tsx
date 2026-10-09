@@ -1,10 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { ArrowDown } from "lucide-react";
+import { getBengaliDate } from "@/lib/bengali";
 
 export default function HeroBanner() {
+  const [todayDate] = useState(() => getBengaliDate());
+
   const scrollToProducts = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const target = document.getElementById("সব-পণ্য");
@@ -21,7 +24,7 @@ export default function HeroBanner() {
           {/* Eyebrow Tag */}
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F0F5F0] border border-[#E1E8E1] text-xs font-semibold text-[#05893E] mb-4">
             <span className="w-2 h-2 rounded-full bg-[#1A9951] animate-ping" />
-            আজকের বাজারের দাম এক নজরে
+            <span>{todayDate}</span>
           </div>
 
           {/* Main Heading */}

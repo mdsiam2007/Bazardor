@@ -64,7 +64,7 @@ export async function fetchWithFallback<T>(path: string, init?: RequestInit): Pr
       const data = await res.json();
       return data as T;
     }
-  } catch (err) {
+  } catch {
     // Silently proceed to fallback API
   }
 
@@ -79,7 +79,7 @@ export async function fetchWithFallback<T>(path: string, init?: RequestInit): Pr
     }
     const data = await res.json();
     return data as T;
-  } catch (err) {
+  } catch {
     throw new Error(`Failed to fetch from both primary and alternative APIs: ${cleanPath}`);
   }
 }
@@ -98,7 +98,7 @@ export async function getProducts(category?: string): Promise<Product[]> {
 export async function getProductByIdOrSlug(idOrSlug: string | number): Promise<Product | null> {
   try {
     return await fetchWithFallback<Product>(`/products/${idOrSlug}`);
-  } catch (error) {
+  } catch {
     // If not found by slug directly, search in all products
     try {
       const all = await getProducts();
@@ -125,7 +125,7 @@ export async function getCategories(): Promise<Category[]> {
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   try {
     return await fetchWithFallback<Category>(`/categories/${slug}`);
-  } catch (error) {
+  } catch {
     try {
       const all = await getCategories();
       const found = all.find((c) => c.slug === slug || c.id === slug);

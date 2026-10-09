@@ -27,7 +27,6 @@ function CategoryContent({ params }: CategoryPageProps) {
 
   useEffect(() => {
     let isMounted = true;
-    setLoading(true);
 
     Promise.all([
       getCategoryBySlug(slug),
@@ -131,7 +130,7 @@ function CategoryContent({ params }: CategoryPageProps) {
                     {category?.nameBn || slug}
                   </h1>
                   <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-                    মোট {toBengaliNumber(products.length)}টি পণ্যের আজকের দাম ও পরিবর্তন
+                    মোট <span className="font-solaiman font-bold">{toBengaliNumber(products.length)}</span>টি পণ্যের আজকের দাম ও পরিবর্তন
                   </p>
                 </div>
               </div>

@@ -17,7 +17,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="bn" className="h-full">
-      <body className="min-h-full flex flex-col bg-[#FAFCFA] text-[#1D271F] font-sans antialiased">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap"
+        />
+      </head>
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col bg-[#FAFCFA] text-[#1D271F] font-sans antialiased"
+      >
         <Toaster
           position="top-right"
           toastOptions={{

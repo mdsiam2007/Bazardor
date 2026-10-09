@@ -10,23 +10,16 @@ import { useSession, authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 import { ArrowLeft, User, Loader2, CheckCircle2 } from "lucide-react";
 
-export default function ProfileEditPage() {
+interface UserData {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
+
+function EditForm({ user }: { user: UserData }) {
   const router = useRouter();
-  const { data: session, isPending } = useSession();
-
-  const [name, setName] = useState("");
+  const [name, setName] = useState(user.name || "");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!isPending) {
-      if (!session?.user) {
-        toast.error("অনুগ্রহ করে প্রথমে লগইন করুন");
-        router.push("/signin?redirect=/profile/edit");
-      } else {
-        setName(session.user.name || "");
-      }
-    }
-  }, [session, isPending, router]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +49,91 @@ export default function ProfileEditPage() {
       setLoading(false);
     }
   };
+
+  return (
+    <form onSubmit={handleUpdate} className="space-y-5">
+      {/* Current Avatar Display */}
+      <div className="flex items-center gap-3.5 pb-2">
+        <div className="w-14 h-14 rounded-full bg-[#05893E]/10 text-[#05893E] flex items-center justify-center font-bold text-xl border border-[#05893E]/20 shadow-sm overflow-hidden shrink-0">
+          {user.image ? (
+            <img
+              src={user.image}
+              alt={user.name || "User"}
+              className="w-full h-full object-cover rounded-full"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            user.name ? user.name.charAt(0).toUpperCase() : "U"
+          )}
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-[#1D271F]">{user.name}</p>
+          <p className="text-xs text-gray-500">{user.email}</p>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold text-[#1D271F] mb-1.5">
+          আপনার নাম (Name)
+        </label>
+        <div className="relative">
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="আপনার পূর্ণ নাম লিখুন"
+            required
+            className="w-full px-3.5 py-2.5 pl-10 text-sm rounded-xl border border-[#E1E8E1] focus:border-[#05893E] focus:outline-none focus:ring-2 focus:ring-[#05893E]/20 transition-all text-[#1D271F]"
+          />
+          <User className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
+        </div>
+      </div>
+
+      {/* Read-only Email display */}
+      <div>
+        <label className="block text-xs font-semibold text-gray-400 mb-1.5">
+          ইমেইল (পরিবর্তনযোগ্য নয়)
+        </label>
+        <input
+          type="email"
+          value={user.email || ""}
+          disabled
+          className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#E1E8E1] bg-gray-50 text-gray-500 cursor-not-allowed"
+        />
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full py-2.5 px-4 rounded-xl bg-[#05893E] hover:bg-[#047F39] text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 mt-6"
+      >
+        {loading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>তথ্য আপডেট হচ্ছে...</span>
+          </>
+        ) : (
+          <>
+            <CheckCircle2 className="w-4 h-4" />
+            <span>তথ্য আপডেট করুন</span>
+          </>
+        )}
+      </button>
+    </form>
+  );
+}
+
+export default function ProfileEditPage() {
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
+
+  useEffect(() => {
+    if (!isPending && !session?.user) {
+      toast.error("অনুগ্রহ করে প্রথমে লগইন করুন");
+      router.push("/signin?redirect=/profile/edit");
+    }
+  }, [session, isPending, router]);
 
   if (isPending) {
     return (
@@ -102,57 +180,7 @@ export default function ProfileEditPage() {
             </p>
           </div>
 
-          {/* Edit Form */}
-          <form onSubmit={handleUpdate} className="space-y-5">
-            <div>
-              <label className="block text-xs font-semibold text-[#1D271F] mb-1.5">
-                আপনার নাম (Name)
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="আপনার পূর্ণ নাম লিখুন"
-                  required
-                  className="w-full px-3.5 py-2.5 pl-10 text-sm rounded-xl border border-[#E1E8E1] focus:border-[#05893E] focus:outline-none focus:ring-2 focus:ring-[#05893E]/20 transition-all text-[#1D271F]"
-                />
-                <User className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
-              </div>
-            </div>
-
-            {/* Read-only Email display */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 mb-1.5">
-                ইমেইল (পরিবর্তনযোগ্য নয়)
-              </label>
-              <input
-                type="email"
-                value={session.user.email}
-                disabled
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#E1E8E1] bg-gray-50 text-gray-500 cursor-not-allowed"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl bg-[#05893E] hover:bg-[#047F39] text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 mt-6"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>তথ্য আপডেট হচ্ছে...</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>তথ্য আপডেট করুন</span>
-                </>
-              )}
-            </button>
-          </form>
+          <EditForm user={session.user} />
         </div>
       </main>
 

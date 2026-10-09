@@ -2,6 +2,12 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { client } from "@/lib/mongodb";
 
+const baseURL = process.env.BETTER_AUTH_URL?.trim();
+const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
+const githubClientId = process.env.GITHUB_CLIENT_ID?.trim();
+const githubClientSecret = process.env.GITHUB_CLIENT_SECRET?.trim();
+
 export const auth = betterAuth({
   database: mongodbAdapter(client.db(), { client }),
   emailAndPassword: {
@@ -9,15 +15,15 @@ export const auth = betterAuth({
     requireEmailVerification: false,
   },
   socialProviders: {
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID || "mock-github-client-id",
-      clientSecret: process.env.GITHUB_CLIENT_SECRET || "mock-github-client-secret",
-    },
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID || "mock-google-client-id",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "mock-google-client-secret",
+      clientId: googleClientId || "mock-google-client-id",
+      clientSecret: googleClientSecret || "mock-google-client-secret",
+    },
+    github: {
+      clientId: githubClientId || "mock-github-client-id",
+      clientSecret: githubClientSecret || "mock-github-client-secret",
     },
   },
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  baseURL,
 });

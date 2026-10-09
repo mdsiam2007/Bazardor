@@ -138,6 +138,16 @@ function ProductDetailsContent({ params }: ProductDetailsProps) {
   const isUp = priceDiff > 0;
   const isDown = priceDiff < 0;
 
+  // Calculate percentage change
+  const changePct =
+    product?.change?.pct ??
+    (product?.yesterday
+      ? Math.abs(((product.today - product.yesterday) / product.yesterday) * 100)
+      : 0);
+  const formattedPct = toBengaliNumber(
+    typeof changePct === "number" ? changePct.toFixed(1) : changePct
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFCFA]">
       <Navbar />
@@ -191,61 +201,68 @@ function ProductDetailsContent({ params }: ProductDetailsProps) {
             <div className="sm:text-right w-full sm:w-auto p-4 sm:p-0 rounded-xl bg-[#F0F5F0] sm:bg-transparent">
               <span className="text-xs text-gray-500 block mb-0.5">আজকের গড় খুচরা দর</span>
               <div className="text-3xl font-bold text-[#05893E]">
-                {toBengaliNumber(product?.today)} <span className="text-base text-gray-600 font-medium">টাকা</span>
+                <span className="font-solaiman">{toBengaliNumber(product?.today)}</span> <span className="text-base text-gray-600 font-medium">টাকা</span>
               </div>
               <span className="text-xs text-gray-500">প্রতি {product?.unit === "kg" ? "কেজি" : product?.unit}</span>
             </div>
           </div>
 
-          {/* Yesterday's Price Comparison Line */}
+          {/* Yesterday's Price Comparison Line (Percentage Display) */}
           <div className="mt-6 pt-4 border-t border-[#F0F5F0] flex items-center gap-2 text-xs sm:text-sm">
             {isUp ? (
               <span className="flex items-center gap-1.5 font-semibold text-[#1A9951]">
                 <TrendingUp className="w-4 h-4" />
-                গতকালের তুলনায় আজ দাম বেড়েছে · {toBengaliNumber(priceDiff)} টাকা
+                গতকালের তুলনায় আজ দাম বেড়েছে · <span className="font-solaiman font-bold">{formattedPct}%</span>
               </span>
             ) : isDown ? (
               <span className="flex items-center gap-1.5 font-semibold text-[#D03739]">
                 <TrendingDown className="w-4 h-4" />
-                গতকালের তুলনায় আজ দাম কমেছে · {toBengaliNumber(Math.abs(priceDiff))} টাকা
+                গতকালের তুলনায় আজ দাম কমেছে · <span className="font-solaiman font-bold">{formattedPct}%</span>
               </span>
             ) : (
               <span className="flex items-center gap-1.5 font-medium text-gray-600">
                 <Minus className="w-4 h-4" />
-                গতকালের তুলনায় দামে কোনো পরিবর্তন হয়নি
+                গতকালের তুলনায় দামে কোনো পরিবর্তন হয়নি · <span className="font-solaiman font-bold">০%</span>
               </span>
             )}
           </div>
         </div>
 
-        {/* Price History & Min/Max Summary Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl border border-[#E1E8E1] p-4 text-center">
-            <span className="text-xs text-gray-500 block">গতকালের দাম</span>
-            <span className="text-xl font-bold text-[#1D271F] mt-1 block">
-              {toBengaliNumber(product?.yesterday)} টাকা
-            </span>
-          </div>
+        {/* দামের সারসংক্ষেপ (Exact 3 Cards from Figma/Penpot) */}
+        <div className="mb-8">
+          <h2 className="text-lg font-bold text-[#1D271F] mb-3">
+            দামের সারসংক্ষেপ
+          </h2>
 
-          <div className="bg-white rounded-xl border border-[#E1E8E1] p-4 text-center">
-            <span className="text-xs text-gray-500 block">গত সপ্তাহে</span>
-            <span className="text-xl font-bold text-[#1D271F] mt-1 block">
-              {toBengaliNumber(product?.lastWeek)} টাকা
-            </span>
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Card 1: সর্বনিম্ন দাম */}
+            <div className="bg-white rounded-2xl border border-[#E1E8E1] p-5 shadow-sm">
+              <span className="text-xs text-gray-500 font-medium block">সর্বনিম্ন দাম</span>
+              <div className="text-2xl font-bold text-[#05893E] my-1">
+                <span className="font-solaiman">{toBengaliNumber(minMarketPrice)}</span> <span className="text-base font-normal text-gray-600">টাকা</span>
+              </div>
+              <span className="text-xs text-gray-500 block">সবচেয়ে কম দামের বাজার</span>
+            </div>
 
-          <div className="bg-white rounded-xl border border-[#E1E8E1] p-4 text-center">
-            <span className="text-xs text-gray-500 block">সর্বনিম্ন বাজার দর</span>
-            <span className="text-xl font-bold text-[#1A9951] mt-1 block">
-              {toBengaliNumber(minMarketPrice)} টাকা
-            </span>
-          </div>
+            {/* Card 2: সর্বাধিক দাম */}
+            <div className="bg-white rounded-2xl border border-[#E1E8E1] p-5 shadow-sm">
+              <span className="text-xs text-gray-500 font-medium block">সর্বাধিক দাম</span>
+              <div className="text-2xl font-bold text-[#D03739] my-1">
+                <span className="font-solaiman">{toBengaliNumber(maxMarketPrice)}</span> <span className="text-base font-normal text-gray-600">টাকা</span>
+              </div>
+              <span className="text-xs text-gray-500 block">সবচেয়ে বেশি দামের বাজার</span>
+            </div>
 
-          <div className="bg-white rounded-xl border border-[#E1E8E1] p-4 text-center">
-            <span className="text-xs text-gray-500 block">সর্বোচ্চ বাজার দর</span>
-            <span className="text-xl font-bold text-[#D03739] mt-1 block">
-              {toBengaliNumber(maxMarketPrice)} টাকা
-            </span>
+            {/* Card 3: গড় দাম */}
+            <div className="bg-white rounded-2xl border border-[#E1E8E1] p-5 shadow-sm">
+              <span className="text-xs text-gray-500 font-medium block">গড় দাম</span>
+              <div className="text-2xl font-bold text-[#05893E] my-1">
+                <span className="font-solaiman">{toBengaliNumber(avgMarketPrice)}</span> <span className="text-base font-normal text-gray-600">টাকা</span>
+              </div>
+              <span className="text-xs text-gray-500 block">
+                প্রতি {product?.unit === "kg" ? "কেজি" : product?.unit}-এর হিসাবে
+              </span>
+            </div>
           </div>
         </div>
 
@@ -259,7 +276,7 @@ function ProductDetailsContent({ params }: ProductDetailsProps) {
               </h2>
             </div>
             <span className="text-xs text-gray-500">
-              মোট {toBengaliNumber(markets.length)}টি প্রধান বাজার
+              মোট <span className="font-solaiman font-bold">{toBengaliNumber(markets.length)}</span>টি প্রধান বাজার
             </span>
           </div>
 
@@ -298,13 +315,13 @@ function ProductDetailsContent({ params }: ProductDetailsProps) {
                           </span>
                         </td>
                         <td className="py-3.5 px-4 sm:px-6 text-right font-medium text-[#1A9951]">
-                          {toBengaliNumber(m.min)} টাকা
+                          <span className="font-solaiman font-semibold">{toBengaliNumber(m.min)}</span> টাকা
                         </td>
                         <td className="py-3.5 px-4 sm:px-6 text-right font-medium text-[#D03739]">
-                          {toBengaliNumber(m.max)} টাকা
+                          <span className="font-solaiman font-semibold">{toBengaliNumber(m.max)}</span> টাকা
                         </td>
                         <td className="py-3.5 px-4 sm:px-6 text-right font-bold text-[#1D271F]">
-                          {toBengaliNumber(avg)} টাকা
+                          <span className="font-solaiman font-bold">{toBengaliNumber(avg)}</span> টাকা
                         </td>
                       </tr>
                     );
