@@ -145,7 +145,7 @@ GITHUB_CLIENT_SECRET=your_github_client_secret
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/your-username/bazardor.git
+git clone https://github.com/mdsiam2007/bazardor.git
 cd bazardor
 ```
 
